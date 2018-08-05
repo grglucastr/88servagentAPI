@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using _88servagentAPI.Models;
+using _88servagentAPI.DTO;
 
 namespace _88servagentAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/temperatures")]
     [ApiController]
     public class HeatHumiditiesController : ControllerBase
     {
@@ -18,6 +19,7 @@ namespace _88servagentAPI.Controllers
         public HeatHumiditiesController(ApiContext context)
         {
             _context = context;
+            _context.Database.EnsureCreated();
         }
 
         // GET: api/HeatHumidities
@@ -83,16 +85,38 @@ namespace _88servagentAPI.Controllers
 
         // POST: api/HeatHumidities
         [HttpPost]
-        public async Task<IActionResult> PostHeatHumidity([FromBody] HeatHumidity heatHumidity)
+        public ActionResult<HeatHumidityDTO> PostHeatHumidity([FromBody] HeatHumidityDTO heatHumidityDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.HeatHumidity.Add(heatHumidity);
-            await _context.SaveChangesAsync();
+            Device device =  _context.Device.Find(heatHumidityDTO.DeviceId);
+            if (device == null) return NotFound(device);
 
+            PreventiveAction preventiveAction = PreventiveAction.None;
+            if(heatHumidityDTO.PreventiveAction == 1)
+            {
+                preventiveAction = PreventiveAction.IncreaseTemperature;
+            }
+            else if(heatHumidityDTO.PreventiveAction == 2)
+            {
+                preventiveAction = PreventiveAction.DecreaseTemperature;
+            }
+
+            HeatHumidity heatHumidity = new HeatHumidity()
+            {
+                Temperature = heatHumidityDTO.Temperature,
+                TemperatureUnit = "°C",
+                Humidity = heatHumidityDTO.Humidity,
+                PreventiveAction = preventiveAction,
+                DateTime = DateTime.Now
+            };
+
+            heatHumidity.Device = device;
+            _context.HeatHumidity.Add(heatHumidity);
+            _context.SaveChanges();
             return CreatedAtAction("GetHeatHumidity", new { id = heatHumidity.Id }, heatHumidity);
         }
 

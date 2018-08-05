@@ -18,5 +18,10 @@ namespace _88servagentAPI.Models
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+        }        
     }
 }

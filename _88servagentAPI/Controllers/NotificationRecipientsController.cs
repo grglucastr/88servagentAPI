@@ -18,6 +18,7 @@ namespace _88servagentAPI.Controllers
         public NotificationRecipientsController(ApiContext context)
         {
             _context = context;
+            _context.Database.EnsureCreated();
         }
 
         // GET: api/NotificationRecipients

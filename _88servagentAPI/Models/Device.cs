@@ -13,8 +13,5 @@ namespace _88servagentAPI.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string Localization { get; set; }
-
-        public virtual ICollection<HeatHumidity> HeatHumidities { get; set; }
-
     }
 }

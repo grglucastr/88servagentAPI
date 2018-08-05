@@ -7,6 +7,7 @@ namespace _88servagentAPI.Models
 {
     public enum PreventiveAction
     {
+        None,
         IncreaseTemperature,
         DecreaseTemperature
     }
